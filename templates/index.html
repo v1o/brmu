@@ -1,0 +1,83 @@
+$def with ()
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function(){
+
+
+			var results_template = "<div id='results_container' style='display: none;'>\
+										<div><input type='search' class='search_field' placeholder='search this list'></input></div>\
+										<div class='results'><table id='results_list'></table></div>\
+										<div><button id='close_list' class='close_content'>Close</button></div>\
+									</div>";
+
+			jQuery("#select_city").click(function(){
+				jQuery.get(
+						'/cities',
+						function(data){
+							jQuery(results_template).insertAfter("#select_city")
+
+							jQuery("#results_list").append("<tr><td>"+data+"</td></tr>")
+
+							/*
+							jQuery.each(data, function(k, v){
+								jQuery("#results_list").append("<tr><td>"+v+"</td></tr>");
+							});
+*/
+							jQuery("#results_container").show('slow');
+
+							
+						}
+					);
+
+			});
+
+			jQuery("#show_add_page").click(function(){
+				jQuery("#search_page").hide();
+				jQuery("#add_page").show('slow');
+			});
+
+			jQuery("#show_search_page").click(function(){
+				jQuery("#add_page").hide();
+				jQuery("#search_page").show('slow');
+			});			
+		});
+	</script>
+</head>
+<body>
+	<div>
+		<button id="select_city">Select a city</button>
+	</div>	
+	<div id="search_page">
+		<div>
+			<button>Select a place</button>
+			<div class="here"></div>
+		</div>
+		<div>
+			<button>Select a beer</button>
+			<div class="here"></div>			
+		</div>
+		<div>
+			<button>Search</button>
+		</div>
+		<div>
+			<button id="show_add_page">Go to Add page</button>
+		</div>
+	</div>
+	<div id="add_page" style="display: none">
+		<div><input type="text"></input></div>
+		<div><input type="text"></input></div>
+		<div>
+			<button>Add</button>
+		</div>
+		<div>
+			<button id="show_search_page">Go to Search page</button>
+		</div>		
+	</div>
+</body>
+</html>
