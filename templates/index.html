@@ -4,11 +4,10 @@ $def with ()
 
 <html>
 <head>
-	<title></title>
+	<title>BRMU</title>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
-
 
 			var results_template = "<div id='results_container' style='display: none;'>\
 										<div><input type='search' class='search_field' placeholder='search this list'></input></div>\
@@ -17,6 +16,7 @@ $def with ()
 									</div>";
 
 			jQuery("#select_city").click(function(){
+				jQuery(".select").attr("disabled", "disabled");
 				jQuery.get(
 						'/cities',
 						function(data){
@@ -24,15 +24,74 @@ $def with ()
 							jQuery(results_template).insertAfter("#select_city");
 							
 							jQuery.each(data, function(k, v){
-								jQuery("#results_list").append("<tr><td>"+v+"</td></tr>");
+								jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
 							});
 							
 							jQuery("#results_container").show('slow');
-
 							
 						}
 					);
+			});
 
+			jQuery("#select_beer").click(function(){
+				jQuery(".select").attr("disabled", "disabled");
+				jQuery.get(
+						'/beers',
+						function(data){
+
+							jQuery(results_template).insertAfter("#select_beer");
+							
+							jQuery.each(data, function(k, v){
+								jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
+							});
+							
+							jQuery("#results_container").show('slow');
+							
+						}
+					);
+			});
+
+			jQuery("#select_place").click(function(){
+				if (jQuery("#select_city").html() != "Select a city") {
+					var value = jQuery("#select_city").html();
+					//alert(value);
+					jQuery(".select").attr("disabled", "disabled");
+					jQuery.get(
+							'/places',
+							{
+								data: value
+							},
+							function(response){
+
+								jQuery(results_template).insertAfter("#select_place");
+								
+								jQuery.each(response, function(k, v){
+									jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
+								});
+								
+								jQuery("#results_container").show('slow');
+								
+							}
+
+						);
+				} else {
+					alert("Select a city !");
+					jQuery(".select").removeAttr("disabled");
+				}
+
+			});			
+
+			jQuery(document).on("click", ".option", function(){
+				var value = jQuery(this).html();
+				jQuery("results_container").hide('slow');
+				jQuery(".select").removeAttr('disabled');
+				jQuery("#results_container").prev().html(value);
+				jQuery("#results_container").remove();
+			});
+
+			jQuery(document).on("click" , "#close_list", function(){
+				jQuery("#results_container").remove();
+				jQuery(".select").removeAttr("disabled");  
 			});
 
 			jQuery("#show_add_page").click(function(){
@@ -49,15 +108,15 @@ $def with ()
 </head>
 <body>
 	<div>
-		<button id="select_city">Select a city</button>
+		<button id="select_city" class="select">Select a city</button>
 	</div>	
 	<div id="search_page">
 		<div>
-			<button>Select a place</button>
+			<button id="select_place" class="select">Select a place</button>
 			<div class="here"></div>
 		</div>
 		<div>
-			<button>Select a beer</button>
+			<button id="select_beer" class="select">Select a beer</button>
 			<div class="here"></div>			
 		</div>
 		<div>
