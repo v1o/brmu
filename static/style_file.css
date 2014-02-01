@@ -1,1 +1,4 @@
 .results { width: 250px; height: 200px; overflow-y: scroll;}
+.select { border-style:none }
+button { border-style:none; width: 250px; }
+input { width: 250px }

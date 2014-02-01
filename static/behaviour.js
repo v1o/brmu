@@ -118,6 +118,27 @@ jQuery(document).ready(function(){
 		}	
 	})
 
+	//search
+	$(document).on('keyup', ".search_field", function() {
+ 
+        // Retrieve the input field text and reset the count to zero
+        var filter = $(this).val(), count = 0;
+ 
+        // Loop through the table rows
+        $("table tr").each(function(){
+ 
+            // If the list item does not contain the text phrase fade it out
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).hide();
+ 
+            // Show the list item if the phrase matches
+            } else {
+                $(this).show();
+            }
+        });
+
+    });	
+
 	jQuery(document).on("click", ".option", function(){
 		var value = jQuery(this).html();
 		jQuery("results_container").hide('slow');
