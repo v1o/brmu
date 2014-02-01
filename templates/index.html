@@ -54,7 +54,6 @@ $def with ()
 			jQuery("#select_place").click(function(){
 				if (jQuery("#select_city").html() != "Select a city") {
 					var value = jQuery("#select_city").html();
-					//alert(value);
 					jQuery(".select").attr("disabled", "disabled");
 					jQuery.get(
 							'/places',
@@ -62,15 +61,18 @@ $def with ()
 								data: value
 							},
 							function(response){
-
-								jQuery(results_template).insertAfter("#select_place");
-								
-								jQuery.each(response, function(k, v){
-									jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
-								});
-								
-								jQuery("#results_container").show('slow');
-								
+								if (response == "Not Found !"){
+									alert(response);
+									jQuery(".select").removeAttr("disabled");
+								} else {
+									jQuery(results_template).insertAfter("#select_place");
+									
+									jQuery.each(response, function(k, v){
+										jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
+									});
+									
+									jQuery("#results_container").show('slow');
+								}
 							}
 
 						);
@@ -79,7 +81,51 @@ $def with ()
 					jQuery(".select").removeAttr("disabled");
 				}
 
-			});			
+			});		
+
+			jQuery("#submit_search").click(function(){
+				var city = jQuery("#select_city").html();
+				var place = jQuery("#select_place").html();
+				var beer = jQuery("#select_beer").html();
+				var search = city+"_"+place+"_"+beer;
+				if ((city == "Select a city") && (place == "Select a place") && (beer == "Select a beer")) {
+					alert("Please select City&Place&Beer !");
+				} else {
+					jQuery.get(
+						'/search',
+						{
+							data: search
+						},
+						function(response){
+								if (response == "Not Found !"){
+									alert(response);
+								} else {
+									alert ("Found !");
+								}
+							}
+						);
+				}
+			});	
+
+			jQuery("#add_place_beer").click(function(){
+				var city = jQuery("#select_city").html();
+				var place = jQuery("#enter_place").val();
+				var beer = jQuery("#enter_beer").val();	
+				var add_data = city+"_"+place+"_"+beer
+				if ((city == "Select a city") || (place == "") || (beer == "")){
+					alert("Please enter all information !");
+				} else {
+					jQuery.post(
+						'/add',
+						{
+							data: add_data
+						},
+						function(response){
+							alert(response);
+							}
+						);
+				}	
+			})
 
 			jQuery(document).on("click", ".option", function(){
 				var value = jQuery(this).html();
@@ -102,6 +148,14 @@ $def with ()
 			jQuery("#show_search_page").click(function(){
 				jQuery("#add_page").hide();
 				jQuery("#search_page").show('slow');
+			});		
+
+			jQuery("#enter_place").click(function(){
+				jQuery(this).val("");
+			});
+
+			jQuery("#enter_beer").click(function(){
+				jQuery(this).val("");
 			});			
 		});
 	</script>
@@ -120,17 +174,17 @@ $def with ()
 			<div class="here"></div>			
 		</div>
 		<div>
-			<button>Search</button>
+			<button id="submit_search">Search</button>
 		</div>
 		<div>
 			<button id="show_add_page">Go to Add page</button>
 		</div>
 	</div>
 	<div id="add_page" style="display: none">
-		<div><input type="text"></input></div>
-		<div><input type="text"></input></div>
-		<div>
-			<button>Add</button>
+		<div><input type="text" id="enter_place" value="Enter place"></input></div>
+		<div><input type="text" id="enter_beer" value="Enter beer"></input></div>
+		<div> 
+			<button id="add_place_beer">Add</button>
 		</div>
 		<div>
 			<button id="show_search_page">Go to Search page</button>
