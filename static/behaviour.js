@@ -1,9 +1,9 @@
 jQuery(document).ready(function(){
 
 	var results_template = "<div id='results_container' style='display: none;'>\
-								<div><input type='search' class='search_field' placeholder='search this list'></input></div>\
-								<div class='results'><table id='results_list'></table></div>\
-								<div><button id='close_list' class='close_content'>Close</button></div>\
+								<div style='margin: 2px;'><input type='search' class='search_field' placeholder='search this list'></input></div>\
+								<div style='margin: 2px;' class='results'><table id='results_list'></table></div>\
+								<div style='margin: 2px;'><button id='close_list' class='close_content'>Close</button></div>\
 							</div>";
 
 	jQuery("#select_city").click(function(){
@@ -79,7 +79,7 @@ jQuery(document).ready(function(){
 		var place = jQuery("#select_place").html();
 		var beer = jQuery("#select_beer").html();
 		var search = city+"_"+place+"_"+beer;
-		if ((city == "Select a city") && (place == "Select a place") && (beer == "Select a beer")) {
+		if ((city == "Select a city") || (place == "Select a place") || (beer == "Select a beer")) {
 			alert("Please select City&Place&Beer !");
 		} else {
 			jQuery.get(
