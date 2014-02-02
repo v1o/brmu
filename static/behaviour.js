@@ -155,10 +155,14 @@ jQuery(document).ready(function(){
 	jQuery("#switch_page").click(function(){
 		if (jQuery("#search_page").is(':visible')) {
 			jQuery("#search_page").hide();
+			jQuery(this).removeClass("add_page_icon");
+			jQuery(this).addClass("search_page_icon");
 			jQuery(this).html("Go to Search page");
 			jQuery("#add_page").show('slow');
 		} else {
 			jQuery("#add_page").hide();
+			jQuery(this).removeClass("search_page_icon");
+			jQuery(this).addClass("add_page_icon");			
 			jQuery(this).html("Go to Add page");
 			jQuery("#search_page").show('slow');
 		}
