@@ -1,5 +1,6 @@
 .results { width: 250px; height: 200px; overflow-y: scroll; }
-.select { border-style:none; }
+.select { border-style: none; }
 button { width: 250px; height: 40px; margin: 5px; border-style:none; border-radius: 5px; }
-input { width: 250px; height: 40px; border-radius: 5px; border: 1px solid #000000; }
+input { width: 245px; height: 40px; border-radius: 5px; border: 1px solid #000000; }
 *{font-family: 'Rock Salt', cursive;}
+#content { position: absolute; width: 260px; left: 50%; margin-left: -150px; }

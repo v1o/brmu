@@ -15,7 +15,7 @@ jQuery(document).ready(function(){
 					jQuery(results_template).insertAfter("#select_city");
 					
 					jQuery.each(data, function(k, v){
-						jQuery("#results_list").append("<tr><td class='option'>"+v+"</td></tr>");
+						jQuery("#results_list").append("<tr><td class='option' >"+v+"</td></tr>");
 					});
 					
 					jQuery("#results_container").show('slow');
