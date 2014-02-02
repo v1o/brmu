@@ -11,32 +11,19 @@ $def with ()
 	<link rel="stylesheet" type="text/css" href="/static/style_file.css">
 </head>
 <body id="content">
-	<div>
-		<button id="select_city" class="select">Select a city</button>
-	</div>	
-	<div id="search_page">
-		<div>
-			<button id="select_place" class="select">Select a place</button>
-		</div>
-		<div>
-			<button id="select_beer" class="select">Select a beer</button>		
-		</div>
-		<div>
-			<button id="submit_search">Search</button>
-		</div>
-		<div>
-			<button id="show_add_page">Go to Add page</button>
-		</div>
+	<button id="select_city" class="select">Select a city</button>
+	<div id="search_page" class="page">
+		<button id="select_place" class="select">Select a place</button>
+		<button id="select_beer" class="select">Select a beer</button>		
+		<button id="submit_search">Search</button>
+
 	</div>
-	<div id="add_page" style="display: none">
+	<div id="add_page" class="page" style="display: none">
 		<div><input type="text" id="enter_place" value="Enter place"></input></div>
 		<div><input type="text" id="enter_beer" value="Enter beer"></input></div>
-		<div> 
-			<button id="add_place_beer">Add</button>
-		</div>
-		<div>
-			<button id="show_search_page">Go to Search page</button>
-		</div>		
+		<button id="add_place_beer">Add</div></button>
+
 	</div>
+	<button id="switch_page">Go to Add page</button>
 </body>
 </html>

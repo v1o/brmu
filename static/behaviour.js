@@ -152,15 +152,17 @@ jQuery(document).ready(function(){
 		jQuery(".select").removeAttr("disabled");  
 	});
 
-	jQuery("#show_add_page").click(function(){
-		jQuery("#search_page").hide();
-		jQuery("#add_page").show('slow');
+	jQuery("#switch_page").click(function(){
+		if (jQuery("#search_page").is(':visible')) {
+			jQuery("#search_page").hide();
+			jQuery(this).html("Go to Search page");
+			jQuery("#add_page").show('slow');
+		} else {
+			jQuery("#add_page").hide();
+			jQuery(this).html("Go to Add page");
+			jQuery("#search_page").show('slow');
+		}
 	});
-
-	jQuery("#show_search_page").click(function(){
-		jQuery("#add_page").hide();
-		jQuery("#search_page").show('slow');
-	});		
 
 	jQuery("#enter_place").click(function(){
 		jQuery(this).val("");
