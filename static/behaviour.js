@@ -102,8 +102,9 @@ jQuery(document).ready(function(){
 		var city = jQuery("#select_city").html();
 		var place = jQuery("#enter_place").val();
 		var beer = jQuery("#enter_beer").val();	
-		var add_data = city+"_"+place+"_"+beer
-		if ((city == "Select a city") || (place == "") || (beer == "")){
+		var beer_price = jQuery("#enter_beer_price").val();
+		var add_data = city+"_"+place+"_"+beer+"_"+beer_price;
+		if ((city == "Select a city") || (place == "") || (beer == "") || (beer_price == "")){
 			alert("Please enter all information !");
 		} else {
 			jQuery.post(
@@ -175,4 +176,31 @@ jQuery(document).ready(function(){
 	jQuery("#enter_beer").click(function(){
 		jQuery(this).val("");
 	});			
+
+	jQuery("#enter_beer_price").click(function(){
+		jQuery(this).val("");
+	});
+
+	jQuery("#feedback_button").click(function(){
+		jQuery("#feedback_section").show('slow');
+	});
+
+	jQuery("#send_feedback").click(function(){
+		var feedback_text = jQuery("#enter_feedback").val();
+		jQuery.post(
+				'/add_feedback',
+				{
+					data: feedback_text
+				},
+				function(response){
+					alert("Feedback sent !");
+				}
+			);
+		jQuery("#enter_feedback").val('');
+		jQuery("#feedback_section").hide('slow');
+	});
+
+	jQuery("#cancel_send_feedback").click(function(){
+		jQuery("#feedback_section").hide('slow');		
+	});
 });

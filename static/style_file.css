@@ -5,5 +5,7 @@ input { width: 245px; height: 40px; border-radius: 5px; border: 1px solid #00000
 *{font-family: 'Rock Salt', cursive;}
 #content { position: absolute; width: 260px; left: 50%; margin-left: -150px; }
 .search_icon { background: url(img/magnifier_resize_60.png) no-repeat right center; border: 1px solid #000000; }
+.add_icon { background: url() no-repeat right center; border: 1px solid #000000; }
 .add_page_icon { background: url(img/fast-forward_resize_60.png) no-repeat right center; border: 1px solid #000000; }
 .search_page_icon { background: url(img/back-forward_resize_60.png) no-repeat left center; border: 1px solid #000000; }
+textarea { width: 350px; height: 200px; }
