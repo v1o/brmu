@@ -65,22 +65,22 @@ class search_places_beers:
 		criteria = place_name+"-"+beer_name
 
 		all_keys = db.dgetall(city_name+"_places_beers").keys()
-		print all_keys
+		#print all_keys
 
 		if criteria in all_keys:
 			#increment searches for city
 			city_key = db.dget("cities_list", city_name)
-			print city_key
 			city_key['searches'] += 1
 			#increment searches for city_beer
 			city_beer_key = db.dget(city_name+"_places_beers", criteria)
 			city_beer_key['searches'] += 1
+			print city_beer_key['price']
 			#increment searches for beer
 			beer_key = db.dget("beers_list", beer_name)
 			beer_key['searches'] += 1
 			#save searches
 			db.dump()
-			return "Found !"
+			return ["Found !", "Price: "+str(city_beer_key['price'] )]
  		else:
 			return "Not Found !"		
 

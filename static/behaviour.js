@@ -91,7 +91,7 @@ jQuery(document).ready(function(){
 						if (response == "Not Found !"){
 							alert(response);
 						} else {
-							alert ("Found !");
+							alert (response);
 						}
 					}
 				);
