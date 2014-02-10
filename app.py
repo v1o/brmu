@@ -86,7 +86,6 @@ class add_place_beer:
 		get_input = web.input(_method='post')
 		city_name, place_name, beer_name, beer_price = get_input.data.split("_")
 
-		timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
 		record = place_name+"-"+beer_name
 
 		#verify if place exists
@@ -116,12 +115,12 @@ class add_place_beer:
 			if record in places_beers:
 				return config.existing_record_message
 			else:
-				db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
+				db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', config.timestamp)])))
 				db.save()
 				return config.added_new_record_message
 		except:
 			db.create_dict(city_name+config.places_beers_suffix)
-			db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
+			db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', config.timestamp)])))
 			db.save()
 			return config.added_new_record_message
 
@@ -129,9 +128,8 @@ class insert_feedback:
 
 	def POST(self):
 		db = db_operation(config.feedback_db)
-		timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
 		feedback = web.input(_method='post')
-		db.insert_key_value(timestamp, feedback)
+		db.insert_key_value(config.timestamp, feedback)
 		db.save()		
 
 
