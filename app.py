@@ -2,6 +2,8 @@ import web
 import pickledb
 import json
 import time
+import config
+from database_interaction import db_operation
 
 urls = (
     '/', 'index',
@@ -24,131 +26,113 @@ class index:
 class get_cities:
 
 	def GET(self):
-		db = pickledb.load("DB/romania.db", False)
-		all_keys = db.dgetall("cities_list").keys()
+		records = db_operation(config.permanent_db)
 		web.header('Content-Type', 'application/json')
-		return json.dumps(all_keys)
+		return json.dumps(records.get_all_keys_from_dict(config.cities_list))
 
 class get_beers:
 
 	def GET(self):
-		db = pickledb.load("DB/romania.db", False)
-		all_keys = db.dgetall("beers_list").keys()
+		records = db_operation(config.permanent_db)
 		web.header('Content-Type', 'application/json')
-		return json.dumps(all_keys)
+		return json.dumps(records.get_all_keys_from_dict(config.beers_list))
+
 
 class get_places:
 
 	def GET(self):
-		db = pickledb.load("DB/romania.db", False)
+		records = db_operation(config.permanent_db)
 		get_input = web.input(_method='get')
-		
+
 		try:
-			all_keys = db.dgetall(get_input.data + "_places").keys()
+			web.header('Content-Type', 'application/json')
+			return json.dumps(records.get_all_keys_from_dict(get_input.data+config.places_suffix))
 		except:
-			all_keys = "Not Found !"
-		web.header('Content-Type', 'application/json')
-		return json.dumps(all_keys)
+			return "Not Found !"
+
 
 class search_places_beers:
 	
 	def GET(self):
-		db = pickledb.load("DB/romania.db", False)
-		#get value from POST
+		records = db_operation(config.permanent_db)
+
 		get_input = web.input(_method='get')
-		#POST data comes as "city_place_beer" -> split in array after "_"
-		search_data = get_input.data.split("_")
-		city_name = search_data[0]
-		place_name = search_data[1]
-		beer_name = search_data[2]
-		
-		criteria = place_name+"-"+beer_name
 
-		all_keys = db.dgetall(city_name+"_places_beers").keys()
-		#print all_keys
+		city_name, place_name, beer_name = get_input.data.split("_")
 
-		if criteria in all_keys:
-			#increment searches for city
-			city_key = db.dget("cities_list", city_name)
-			city_key['searches'] += 1
-			#increment searches for city_beer
-			city_beer_key = db.dget(city_name+"_places_beers", criteria)
-			city_beer_key['searches'] += 1
-			print city_beer_key['price']
-			#increment searches for beer
-			beer_key = db.dget("beers_list", beer_name)
-			beer_key['searches'] += 1
-			#save searches
-			db.dump()
-			return ["Found !", "Price: "+str(city_beer_key['price'] )]
- 		else:
-			return "Not Found !"		
+		all_dict_keys = records.get_all_keys_from_dict(city_name+config.places_beers_suffix)
+
+		if place_name+"-"+beer_name in all_dict_keys:
+			#increment city searches
+			records.increment_search("cities_list", city_name, "searches")
+			#increment city_beer searches
+			records.increment_search(city_name+config.places_beers_suffix, place_name+"-"+beer_name, "searches")
+			#increment beer searches
+			records.increment_search(config.beers_list, beer_name, "searches")
+			#increment places
+			records.increment_search(city_name+config.places_suffix, place_name, "searches")
+			#save DB
+			records.save()
+			return "Found !"
+		else:
+			return "Not Found !"
+
 
 class add_place_beer:
 
 	def POST(self):
-		db = pickledb.load("DB/romania.db", False)
+		records = db_operation(config.permanent_db)
 		#get value from POST
 		get_input = web.input(_method='post')
+		city_name, place_name, beer_name, beer_price = get_input.data.split("_")
 
-		add_data = get_input.data.split("_")
-		city_name = add_data[0]
-		place_name = add_data[1]
-		beer_name = add_data[2]
-		beer_price = add_data[3]
-
+		timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
 		record = place_name+"-"+beer_name
 
 		#verify if place exists
 		try:
-			places_keys = db.dgetall(city_name+"_places")
-			if place_name in keys:
-				print "Exists place !"
+			places = records.get_all_keys_from_dict(city_name+config.places_suffix)
+			if place_name in places:
+				print "Place exists"
 			else:
-				timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-				db.dadd(city_name+"_places", (place_name, dict([('searches', 0), ('date_added', timestamp)])))
-				db.dump()
+				records.add_to_dict(city_name+config.places_suffix, (place_name, dict([('searches', 0), ('date_added', timestamp)])))
+				records.save()
 		except:
-			db.dcreate(city_name+"_places")
-			timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-			db.dadd(city_name+"_places", (place_name, dict([('searches', 0), ('date_added', timestamp)])))
-			db.dump()
-
+			records.create_dict(city_name+config.places_suffix)
+			records.add_to_dict(city_name+config.places_suffix, (place_name, dict([('searches', 0), ('date_added', timestamp)])))
+			records.save()
 		#verify if beer exists
-		beers_keys = db.dgetall("beers_list")
-		if beer_name in beers_keys:
-			print "Exists beer !"
+
+		beers = records.get_all_keys_from_dict(config.beers_list)
+		if beer_name in beers:
+			print "Beer exists"
 		else:
-			timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-			db.dadd("beers_list", (beer_name, dict([('searches', 0), ('date_added', timestamp)])))
-			db.dump()
+			records.add_to_dict(config.beers_list, (beer_name, dict([('searches', 0), ('date_added', timestamp)])))
+			records.save()
 
-		#try adding the pair place_beer
+		#verify if the pair place_beer exists
 		try:
-			all_keys = db.dgetall(city_name+"_places_beers")
-
-			if record in all_keys:
+			places_beers = records.get_all_keys_from_dict(city_name+config.places_beers_suffix)
+			if record in places_beers:
 				return "Already exists !"
 			else:
-				timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-				db.dadd(city_name+"_places_beers", (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
-				db.dump()
+				records.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
+				records.save()
 				return "Added new record to existing list !"
 		except:
-			db.dcreate(city_name+"_places_beers")
-			timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-			db.dadd(city_name+"_places_beers", (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
-			db.dump()
+			records.create_dict(city_name+config.places_beers_suffix)
+			records.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', timestamp)])))
+			records.save()
 			return "Added new record !"
 
 class insert_feedback:
 
 	def POST(self):
-		db = pickledb.load("DB/feedback.db", False)
+		record = db_operation(config.feedback_db)
 		timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
 		feedback = web.input(_method='post')
-		db.set(timestamp, feedback)
-		db.dump()
+		record.insert_key_value(timestamp, feedback)
+		record.save()		
 
 
 if __name__ == "__main__":
