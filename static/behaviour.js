@@ -102,8 +102,21 @@ jQuery(document).ready(function(){
 		var city = jQuery("#select_city").html();
 		var place = jQuery("#enter_place").val();
 		var beer = jQuery("#enter_beer").val();	
+		var beer_type = jQuery("#beer_type").val();
 		var beer_price = jQuery("#enter_beer_price").val();
-		var add_data = city+"_"+place+"_"+beer+"_"+beer_price;
+
+		var date = new Date();
+		var day = date.getDate();
+		var month = date.getMonth()+1;
+		var year = date.getFullYear();
+		var hour = date.getHours();
+		var minute = date.getMinutes();
+		var second = date.getSeconds();
+		var submit_date = day+"-"+month+"-"+year+"_"+hour+":"+minute+":"+second;
+
+		var add_data = city+"_places_beers"+";"+place+"-"+beer+";"+beer_type+";"+beer_price+";"+submit_date+";";
+		console.log(add_data);
+		
 		if ((city == "Select a city") || (place == "") || (beer == "") || (beer_price == "")){
 			alert("Please enter all information !");
 		} else {
@@ -116,7 +129,7 @@ jQuery(document).ready(function(){
 					alert(response);
 					}
 				);
-		}	
+		}
 	})
 
 	//search

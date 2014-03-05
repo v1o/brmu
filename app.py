@@ -3,7 +3,7 @@ import pickledb
 import json
 import time
 import config
-from database_interaction import db_operation
+from database_operations import db_operations
 
 urls = (
     '/', 'index',
@@ -11,7 +11,7 @@ urls = (
     '/beers', 'get_beers',
     '/places', 'get_places',
     '/search', 'search_places_beers',
-    '/add', 'add_place_beer',
+    '/add', 'save_entry',
     '/add_feedback', 'insert_feedback'
 )
 
@@ -26,27 +26,27 @@ class index:
 class get_cities:
 
 	def GET(self):
-		db = db_operation(config.permanent_db)
+		db = db_operations(config.permanent_db)
 		web.header('Content-Type', 'application/json')
-		return json.dumps(db.get_all_keys_from_dict(config.cities_list))
+		return json.dumps(db.get_all_keys_from_root_dict(config.cities_list))
 
 class get_beers:
 
 	def GET(self):
-		db = db_operation(config.permanent_db)
+		db = db_operations(config.permanent_db)
 		web.header('Content-Type', 'application/json')
-		return json.dumps(db.get_all_keys_from_dict(config.beers_list))
+		return json.dumps(db.get_all_keys_from_root_dict(config.beers_list))
 
 
 class get_places:
 
 	def GET(self):
-		db = db_operation(config.permanent_db)
+		db = db_operations(config.permanent_db)
 		get_input = web.input(_method='get')
 
 		try:
 			web.header('Content-Type', 'application/json')
-			return json.dumps(db.get_all_keys_from_dict(get_input.data+config.places_suffix))
+			return json.dumps(db.get_all_keys_from_root_dict(get_input.data+config.places_suffix))
 		except:
 			return "Not Found !"
 
@@ -62,7 +62,7 @@ class search_places_beers:
 
 		all_dict_keys = db.get_all_keys_from_dict(city_name+config.places_beers_suffix)
 
-		if place_name+"-"+beer_name in all_dict_keys:
+		if place_name + "-" + beer_name in all_dict_keys:
 			#increment city searches
 			db.increment_search("cities_list", city_name, "searches")
 			#increment city_beer searches
@@ -78,59 +78,25 @@ class search_places_beers:
 			return "Not Found !"
 
 
-class add_place_beer:
-
+class save_entry:
 	def POST(self):
-		db = db_operation(config.permanent_db)
-		#get value from POST
-		get_input = web.input(_method='post')
-		city_name, place_name, beer_name, beer_price = get_input.data.split("_")
+		get_record = web.input(_method='post')
 
-		record = place_name+"-"+beer_name
+		db = db_operations(config.permanent_db)
 
-		#verify if place exists
-		try:
-			places = db.get_all_keys_from_dict(city_name+config.places_suffix)
-			if place_name in places:
-				print "Place exists"
-			else:
-				db.add_to_dict(city_name+config.places_suffix, (place_name, config.new_record_place))
-				db.save()
-		except:
-			db.create_dict(city_name+config.places_suffix)
-			db.add_to_dict(city_name+config.places_suffix, (place_name, config.new_record_place))
-			db.save()
+		record_array = get_record.data.split(";")
+		print len(record_array)
+		db.save_city_name_place_beer(record_array)
 
-		#verify if beer exists
-		beers = db.get_all_keys_from_dict(config.beers_list)
-		if beer_name in beers:
-			print "Beer exists"
-		else:
-			db.add_to_dict(config.beers_list, (beer_name, config.new_record_beer))
-			db.save()
+		return "done"
 
-		#verify if the pair place_beer exists
-		try:
-			places_beers = db.get_all_keys_from_dict(city_name+config.places_beers_suffix)
-			if record in places_beers:
-				return config.existing_record_message
-			else:
-				db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', config.timestamp)])))
-				db.save()
-				return config.added_new_record_message
-		except:
-			db.create_dict(city_name+config.places_beers_suffix)
-			db.add_to_dict(city_name+config.places_beers_suffix, (record, dict([('searches', 0), ('price', beer_price), ('date_added', config.timestamp)])))
-			db.save()
-			return config.added_new_record_message
 
 class insert_feedback:
 
 	def POST(self):
-		db = db_operation(config.feedback_db)
+		db = db_operations(config.feedback_db)
 		feedback = web.input(_method='post')
-		db.insert_key_value(config.timestamp, feedback)
-		db.save()		
+		db.save_feedback(feedback)		
 
 
 if __name__ == "__main__":

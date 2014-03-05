@@ -5,7 +5,7 @@ $def with ()
 <html>
 <head>
 	<title>Beer Me Up!</title>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script type="text/javascript" src="/static/jquery-last.js"></script>
 	<script type="text/javascript" src="/static/behaviour.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="/static/style_file.css">
@@ -21,6 +21,7 @@ $def with ()
 		<div id="add_page" class="page" style="display: none">
 			<div><input type="text" id="enter_place" value="Enter place"></input></div>
 			<div><input type="text" id="enter_beer" value="Enter beer"></input></div>
+			<div><select id="beer_type"><option>Select beer type</option><option>bottle</option><option>draught</option><option>N\A</option></select></div>			
 			<div><input type="text" id="enter_beer_price" value="Enter beer price"></input></div>
 			<button id="add_place_beer" class="add_icon">Add</div></button>
 		</div>
