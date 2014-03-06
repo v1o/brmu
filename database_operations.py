@@ -55,11 +55,11 @@ class db_operations:
 			else:
 				#add beer name
 				print "city didn't exist. added."
-				all_dicts_from_cities_list.update( dict([[ city_name, dict('searches': 0) ]]) )
+				all_dicts_from_cities_list.update( dict([[ city_name, dict([('searches', 0)]) ]]) )
 				self.db.dump()					
 		else:
 			#add beers_list + beer name
-			self.db.dadd("root", (config.cities_list,  dict([[ city_name, dict('searches': 0) ]])  ))
+			self.db.dadd("root", (config.cities_list,  dict([[ city_name, dict([('searches', 0)]) ]])  ))
 			self.db.dump()			
 
 	def save_beer(self, beer_name, searches, datetime_added):
