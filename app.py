@@ -54,25 +54,22 @@ class get_places:
 class search_places_beers:
 	
 	def GET(self):
-		db = db_operation(config.permanent_db)
+		db = db_operations(config.permanent_db)
 
 		get_input = web.input(_method='get')
 
 		city_name, place_name, beer_name = get_input.data.split("_")
 
-		all_dict_keys = db.get_all_keys_from_dict(city_name+config.places_beers_suffix)
+		all_dict_keys = db.get_all_keys_from_root_dict(city_name+config.places_beers_suffix)
 
 		if place_name + "-" + beer_name in all_dict_keys:
 			#increment city searches
-			db.increment_search("cities_list", city_name, "searches")
-			#increment city_beer searches
-			db.increment_search(city_name+config.places_beers_suffix, place_name+"-"+beer_name, "searches")
+			db.increment_searches(config.cities_list, city_name)
 			#increment beer searches
-			db.increment_search(config.beers_list, beer_name, "searches")
+			db.increment_searches(config.beers_list, beer_name)
 			#increment places
-			db.increment_search(city_name+config.places_suffix, place_name, "searches")
+			db.increment_searches(city_name+config.places_suffix, place_name)
 			#save DB
-			db.save()
 			return "Found !"
 		else:
 			return "Not Found !"
@@ -82,10 +79,10 @@ class save_entry:
 	def POST(self):
 		get_record = web.input(_method='post')
 
-		db = db_operations(config.permanent_db)
+		db = db_operations(config.temporary_db)
 
 		record_array = get_record.data.split(";")
-		print len(record_array)
+		#print len(record_array)
 		db.save_city_name_place_beer(record_array)
 
 		return "done"

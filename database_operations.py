@@ -16,18 +16,15 @@ class db_operations:
 		self.db.set(timestamp, feedback)
 		self.db.dump()		
 
+	def increment_searches(self, bucket, entity):
+		all_keys_from_bucket = self.db.dget("root", bucket)
+		all_keys_from_bucket[entity]['searches'] += 1
+		self.db.dump()
+
 	def delete_entry(self, sequence_of_values):
 		city_place_beer = sequence_of_values[0]
 		place_beer = sequence_of_values[1]
 		beer_type = sequence_of_values[2]
-		beer_price = sequence_of_values[3]
-		datetime_added = sequence_of_values[4]
-
-		city_name_place_beer_array = sequence_of_values[0].split("_")
-		place_beer_array = sequence_of_values[1].split("-")
-		city_name = city_name_place_beer_array[0]
-		place_name = place_beer_array[0]
-		beer_name = place_beer_array[1]		
 
 		all_keys_from_places_beers = self.db.dget("root", city_place_beer)
 		#delete beer_type entry
@@ -42,22 +39,27 @@ class db_operations:
 		return "done"
 
 	def save_city(self, city_name):
-		datetime_added = config.timestamp
-		all_keys_from_root = self.db.dgetall("root")
-		if "cities_list" in all_keys_from_root:
-			print "beer exists. do nothing"
-			all_keys_from_cities_list = self.db.dget("root", "cities_list")
+		all_keys_from_root = self.db.dgetall("root").keys()
+		print "all_keys_from_root"
+		print all_keys_from_root
+
+		if config.cities_list in all_keys_from_root:
+			print "cities_list exists. going deeper"
+			all_dicts_from_cities_list = self.db.dget("root", config.cities_list)
+			all_keys_from_cities_list = self.db.dget("root", config.cities_list).keys()
+			print "all_keys_from_cities_list"
+			print all_keys_from_cities_list
 			#if beer name exists
 			if city_name in all_keys_from_cities_list:
 				print "city exists. do nothing"
 			else:
 				#add beer name
 				print "city didn't exist. added."
-				all_keys_from_cities_list.update( dict([[city_name, ('searches', 0) ]]) )
+				all_dicts_from_cities_list.update( dict([[ city_name, dict('searches': 0) ]]) )
 				self.db.dump()					
 		else:
 			#add beers_list + beer name
-			self.db.dadd("root", ("cities_list",  dict([[city_name, ('searches', 0) ]])  ))
+			self.db.dadd("root", (config.cities_list,  dict([[ city_name, dict('searches': 0) ]])  ))
 			self.db.dump()			
 
 	def save_beer(self, beer_name, searches, datetime_added):
@@ -75,7 +77,7 @@ class db_operations:
 				self.db.dump()					
 		else:
 			#add beers_list + beer name
-			self.db.dadd("root", ("beers_list",  dict([[beer_name, dict( [('searches', searches), ('datetime_added', datetime_added) ] ) ]])  ))
+			self.db.dadd("root", (config.beers_list,  dict([[beer_name, dict( [('searches', searches), ('datetime_added', datetime_added) ] ) ]])  ))
 			self.db.dump()			
 
 	def save_city_name_place(self, city_name, place_name, searches, datetime_added):
@@ -110,18 +112,18 @@ class db_operations:
 		city_name = city_name_place_beer_array[0]
 		place_name = place_beer_array[0]
 		beer_name = place_beer_array[1]
-		#print city_name, place_name, beer_name
-
 
 		#try to get all keys from root
 		try:
-			all_keys_from_root = self.db.dgetall("root")
+			all_keys_from_root = self.db.dgetall("root").keys()
 		except:
 			#create root dictionary
 			self.db.dcreate("root")
 			self.db.dump()	
 
-		all_keys_from_root = self.db.dgetall("root")
+		all_keys_from_root = self.db.dgetall("root").keys()
+		print "all_keys_from_root"
+		print all_keys_from_root
 		#city-name_place_beer section -------------
 		#add to existing dictionaries in self.db
 		#verify if _places_beers dictionary exists in root
@@ -129,46 +131,38 @@ class db_operations:
 			
 			#if exists, get all keys from it
 			all_keys_from_places_beers = self.db.dget("root", city_place_beer)
-			#print all_keys_from_places_beers
+			print "all_keys_from_places_beers"
+			print all_keys_from_places_beers
 			#search for specific place-beer key
 			if place_beer in all_keys_from_places_beers:
-
 				#get all beer_types		
 				print "place_beer exists"
 				#if found, return beer types
-				beer_types_array = all_keys_from_places_beers[place_beer]
-				#print beer_types_array
+				beer_types_array = all_keys_from_places_beers[place_beer].keys()
+				print "beer_types_array"
+				print beer_types_array
 				w = False
-				#search to find if the beer type exists
-				for k, v in beer_types_array:
-					print "beer_type, dict"
-					#verify if beer type exists
-					if beer_type == k:
-						w = True
-						print v['price']
-						if v['price'] == beer_price:
-							print "price the same. do nothing"
-						else:
-							print "updating price"
-							v['price'] = beer_price
-							self.db.dump()
-
-				#add beer type to place_beer_array
-				if w == False:
-					beer_types_array.append([ beer_type, dict( [('price', beer_price), ('datetime_added', datetime_added) ] )  ])
+				if beer_type in beer_types_array:
+					print "go deeper to the price"
+					if all_keys_from_places_beers[place_beer][beer_type]['price'] == beer_price:
+						print "same price. do nothing"
+					else:
+						all_keys_from_places_beers[place_beer][beer_type]['price'] = beer_price
+						self.db.dump()
+				else:
+					print "adding beer type"
+					all_keys_from_places_beers[place_beer].update(dict([[ beer_type, dict( [('price', beer_price), ('datetime_added', datetime_added) ] )  ]]))
 					self.db.dump()
-					print "updated dict"
-					
 			#add place_beer_key+beer_type
 			else:
 				print "added place_beer_key+beer_type"
-				all_keys_from_places_beers.update(dict( [[ place_beer, [ [ beer_type, dict( [('price', beer_price), ('datetime_added', datetime_added) ] )  ] ] ]] ))
+				self.db.dadd("root", (city_place_beer, dict([[place_beer, dict([[beer_type, dict([('price', beer_price),('datetime_added', datetime_added)])]]) ]]) ))
 				self.db.dump()
 
 
 		else:
-			print "city_place_beer doesn't exist. adding + place_beer + beer_type"
-			self.db.dadd("root", (city_place_beer, dict( [[ place_beer, [ [ beer_type, dict( [('price', beer_price), ('datetime_added', datetime_added) ] )  ] ] ]] ) ))
+			print "fuck you !!"
+			self.db.dadd("root", (city_place_beer, dict([[place_beer, dict([[beer_type, dict([('price', beer_price),('datetime_added', datetime_added)]) ]] ) ]]) ))
 			self.db.dump()
 
 		#city-name_places section ------------

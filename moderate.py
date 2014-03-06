@@ -47,7 +47,7 @@ class save_entry:
 		db = db_operations(config.permanent_db)
 
 		record_array = get_record.data.split(";")
-		print len(record_array)
+		#print len(record_array)
 		db.save_city_name_place_beer(record_array)
 
 		return "done"

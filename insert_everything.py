@@ -1,9 +1,10 @@
 import pickledb
 import time
 from database_operations import db_operations
+import config
 #generate some records
 #load romania.db
-db = db_operations("DB/romania.db")
+db = db_operations(config.permanent_db)
 
 f = open("orase.txt", 'r')
 

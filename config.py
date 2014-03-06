@@ -13,5 +13,3 @@ cities_list = "cities_list"
 added_new_record_message = "Added new record. Please wait for it to be moderated !"
 existing_record_message = "Record already exists !"
 timestamp = time.strftime("%d-%m-%Y")+"_"+time.strftime("%H:%M:%S")
-new_record_beer = dict([('searches', 0), ('date_added', timestamp)])
-new_record_place = dict([('searches', 0), ('date_added', timestamp)])
