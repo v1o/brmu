@@ -24,14 +24,12 @@ class index:
 		return self.render.index()
 
 class get_cities:
-
 	def GET(self):
 		db = db_operations(config.permanent_db)
 		web.header('Content-Type', 'application/json')
 		return json.dumps(db.get_all_keys_from_root_dict(config.cities_list))
 
 class get_beers:
-
 	def GET(self):
 		db = db_operations(config.permanent_db)
 		web.header('Content-Type', 'application/json')
@@ -39,7 +37,6 @@ class get_beers:
 
 
 class get_places:
-
 	def GET(self):
 		db = db_operations(config.permanent_db)
 		get_input = web.input(_method='get')
@@ -52,7 +49,6 @@ class get_places:
 
 
 class search_places_beers:
-	
 	def GET(self):
 		db = db_operations(config.permanent_db)
 
@@ -69,9 +65,14 @@ class search_places_beers:
 			db.increment_searches(config.beers_list, beer_name)
 			#increment places
 			db.increment_searches(city_name+config.places_suffix, place_name)
-			#save DB
-			return "Found !"
-		else:
+			#return response
+			response = db.get_all_dicts_from_root_dict(city_name+config.places_beers_suffix)[place_name+"-"+beer_name]
+			#print response
+			
+		try:
+			web.header('Content-Type', 'application/json')
+			return json.dumps(response)		
+		except:
 			return "Not Found !"
 
 
@@ -87,9 +88,7 @@ class save_entry:
 
 		return "done"
 
-
 class insert_feedback:
-
 	def POST(self):
 		db = db_operations(config.feedback_db)
 		feedback = web.input(_method='post')

@@ -78,20 +78,29 @@ jQuery(document).ready(function(){
 		var city = jQuery("#select_city").html();
 		var place = jQuery("#select_place").html();
 		var beer = jQuery("#select_beer").html();
-		var search = city+"_"+place+"_"+beer;
+		var search_criteria = city+"_"+place+"_"+beer;
 		if ((city == "Select a city") || (place == "Select a place") || (beer == "Select a beer")) {
 			alert("Please select City&Place&Beer !");
 		} else {
 			jQuery.get(
 				'/search',
 				{
-					data: search
+					data: search_criteria
 				},
 				function(response){
 						if (response == "Not Found !"){
 							alert(response);
 						} else {
-							alert (response);
+							var table_results = "<table>";
+							var beer_types = [];
+							jQuery.each(response, function(json_obj, json_value){
+									table_results = table_results + "<tr><td>" +json_obj + "</td><td>Price</td><td>" + json_value.price + "</td></tr>";
+								}
+							);
+							table_results = table_results + "</table>";
+							jQuery("#search_results").append(beer);
+							jQuery("#search_results").append(table_results);
+							jQuery("#search_results").dialog();
 						}
 					}
 				);

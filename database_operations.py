@@ -11,6 +11,9 @@ class db_operations:
 	def get_all_keys_from_root_dict(self, dictionary):
 		return self.db.dget("root", dictionary).keys()
 
+	def get_all_dicts_from_root_dict(self, dictionary):
+		return self.db.dget("root", dictionary)
+
 	def save_feedback(self, feedback):
 		timestamp = config.timestamp
 		self.db.set(timestamp, feedback)
