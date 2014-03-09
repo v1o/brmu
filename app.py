@@ -124,36 +124,6 @@ class search_places_beers:
 			except:
 				return "Not Found !"
 
-
-'''
-class search_places_beers:
-	def GET(self):
-		db = db_operations(config.permanent_db)
-
-		get_input = web.input(_method='get')
-
-		city_name, place_name, beer_name = get_input.data.split("_")
-
-		all_dict_keys = db.get_all_keys_from_root_dict(city_name+config.places_beers_suffix)
-
-		if place_name + "-" + beer_name in all_dict_keys:
-			#increment city searches
-			db.increment_searches(config.cities_list, city_name)
-			#increment beer searches
-			db.increment_searches(config.beers_list, beer_name)
-			#increment places
-			db.increment_searches(city_name+config.places_suffix, place_name)
-			#return response
-			response = db.get_all_dicts_from_root_dict(city_name+config.places_beers_suffix)[place_name+"-"+beer_name]
-			#print response
-			
-		try:
-			web.header('Content-Type', 'application/json')
-			return json.dumps(response)		
-		except:
-			return "Not Found !"
-'''
-
 class save_entry:
 	def POST(self):
 		get_record = web.input(_method='post')
@@ -164,7 +134,7 @@ class save_entry:
 		#print len(record_array)
 		db.save_city_name_place_beer(record_array)
 
-		return "done"
+		return "Your new record was added. It will be moderated shortly!"
 
 class insert_feedback:
 	def POST(self):

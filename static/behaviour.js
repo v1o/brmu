@@ -139,7 +139,7 @@ jQuery(document).ready(function(){
 		var add_data = city+"_places_beers"+";"+place+"-"+beer+";"+beer_type+";"+beer_price+";"+submit_date+";";
 		console.log(add_data);
 		
-		if ((city == "Select a city") || (place == "") || (beer == "") || (beer_price == "")){
+		if ((city == "Select a city") || (place == "") || (beer == "") || (beer_price == "") || (beer_type == "Select beer type")){
 			alert("Please enter all information !");
 		} else {
 			jQuery.post(
