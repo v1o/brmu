@@ -36,25 +36,17 @@ class get_beers:
 		web.header('Content-Type', 'application/json')
 		return json.dumps(db.get_all_keys_from_root_dict(config.beers_list))
 
-
 class get_places:
 	def GET(self):
 		db = db_operations(config.permanent_db)
 		get_input = web.input(_method='get')
 
 		try:
+			response = db.get_all_keys_from_root_dict(get_input.data+config.places_suffix)
 			web.header('Content-Type', 'application/json')
-			return json.dumps(db.get_all_keys_from_root_dict(get_input.data+config.places_suffix))
+			return json.dumps(response)
 		except:
 			return "Not Found !"
-
-class generic_search:
-	def GET(self):
-		db = db_operations(config.permanent_db)
-		get_input = web.input(_method='get')
-
-		input_array = get_input.split("_")
-		return input_array
 
 class search_places_beers:
 	def GET(self):
@@ -99,9 +91,12 @@ class search_places_beers:
 					#increment places
 					db.increment_searches(city_name+config.places_suffix, place_name)
 
-			try:
-				web.header('Content-Type', 'application/json')
-				return json.dumps(response)
+			try:		
+				if len(response) > 0:
+					web.header('Content-Type', 'application/json')
+					return json.dumps(response)
+				else:
+					return "Not Found !"
 			except:
 				return "Not Found !"
 
@@ -119,8 +114,11 @@ class search_places_beers:
 					db.increment_searches(config.beers_list, beer_name)
 
 			try:
-				web.header('Content-Type', 'application/json')
-				return json.dumps(response)		
+				if len(response) > 0:
+					web.header('Content-Type', 'application/json')
+					return json.dumps(response)		
+				else:
+					return "Not Found !"
 			except:
 				return "Not Found !"
 

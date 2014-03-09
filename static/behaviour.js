@@ -53,7 +53,7 @@ jQuery(document).ready(function(){
 					},
 					function(response){
 						if (response == "Not Found !"){
-							alert(response);
+							alert("No places available for the selected City :(");
 							jQuery(".select").removeAttr("disabled");
 						} else {
 							jQuery(results_template).insertAfter("#select_place");
@@ -96,6 +96,7 @@ jQuery(document).ready(function(){
 						if (response == "Not Found !"){
 							alert(response);
 						} else {
+							//console.log(response.size);
 							jQuery("#search_results").append("<div id='results_wrapper'></div>");
 							jQuery.each(response, function(k, v){
 								console.log(k);
