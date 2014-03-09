@@ -11,6 +11,7 @@ urls = (
     '/beers', 'get_beers',
     '/places', 'get_places',
     '/search', 'search_places_beers',
+    '/search_general', 'generic_search',
     '/add', 'save_entry',
     '/add_feedback', 'insert_feedback'
 )
@@ -47,7 +48,84 @@ class get_places:
 		except:
 			return "Not Found !"
 
+class generic_search:
+	def GET(self):
+		db = db_operations(config.permanent_db)
+		get_input = web.input(_method='get')
 
+		input_array = get_input.split("_")
+		return input_array
+
+class search_places_beers:
+	def GET(self):
+		db = db_operations(config.permanent_db)
+		get_input = web.input(_method='get')
+
+		city_name, place_name, beer_name = get_input.data.split("_")
+
+		all_dict_keys = db.get_all_keys_from_root_dict(city_name+config.places_beers_suffix)
+
+		if place_name != "Select a place" and beer_name != "Select a beer":
+			response = dict()
+			if place_name + "-" + beer_name in all_dict_keys:
+				#increment city searches
+				db.increment_searches(config.cities_list, city_name)
+				#increment beer searches
+				db.increment_searches(config.beers_list, beer_name)
+				#increment places
+				db.increment_searches(city_name+config.places_suffix, place_name)
+				#return response
+				response[place_name+"-"+beer_name] = db.get_all_dicts_from_root_dict(city_name+config.places_beers_suffix)[place_name+"-"+beer_name]
+				#print response
+				
+			try:
+				web.header('Content-Type', 'application/json')
+				return json.dumps(response)		
+			except:
+				return "Not Found !"
+
+		elif beer_name == "Select a beer":
+			response = dict()
+			for place_beer in all_dict_keys:
+				if place_name in place_beer:
+					print place_beer
+					place_beer_key = place_beer.split("-")
+					print place_beer_key
+					beer_name = place_beer_key[1]
+					response[beer_name] = db.get_all_dicts_from_root_dict(city_name+config.places_beers_suffix)[place_beer]
+
+					#increment city searches
+					db.increment_searches(config.cities_list, city_name)
+					#increment places
+					db.increment_searches(city_name+config.places_suffix, place_name)
+
+			try:
+				web.header('Content-Type', 'application/json')
+				return json.dumps(response)
+			except:
+				return "Not Found !"
+
+		else:
+			response = dict()
+			for place_beer in all_dict_keys:
+				if beer_name in place_beer:
+					place_beer_key = place_beer.split("-")
+					place_name = place_beer_key[0]
+					response[place_name] = db.get_all_dicts_from_root_dict(city_name+config.places_beers_suffix)[place_beer]
+
+					#increment city searches
+					db.increment_searches(config.cities_list, city_name)
+					#increment beer searches
+					db.increment_searches(config.beers_list, beer_name)
+
+			try:
+				web.header('Content-Type', 'application/json')
+				return json.dumps(response)		
+			except:
+				return "Not Found !"
+
+
+'''
 class search_places_beers:
 	def GET(self):
 		db = db_operations(config.permanent_db)
@@ -74,7 +152,7 @@ class search_places_beers:
 			return json.dumps(response)		
 		except:
 			return "Not Found !"
-
+'''
 
 class save_entry:
 	def POST(self):

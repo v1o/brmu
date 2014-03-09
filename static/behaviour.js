@@ -74,38 +74,51 @@ jQuery(document).ready(function(){
 
 	});		
 
+	//general search
 	jQuery("#submit_search").click(function(){
 		var city = jQuery("#select_city").html();
 		var place = jQuery("#select_place").html();
 		var beer = jQuery("#select_beer").html();
-		var search_criteria = city+"_"+place+"_"+beer;
-		if ((city == "Select a city") || (place == "Select a place") || (beer == "Select a beer")) {
-			alert("Please select City&Place&Beer !");
+		if (city == "Select a city") {
+			alert("Please select City");
 		} else {
-			jQuery.get(
-				'/search',
-				{
-					data: search_criteria
-				},
-				function(response){
+			if ((place == "Select a place") && (beer == "Select a beer")){
+				alert("Please select a beer / place or both");
+			} else {
+				var search_criteria = city+"_"+place+"_"+beer;
+				//alert(search_criteria);
+				jQuery.get(
+					'/search',
+					{
+						data: search_criteria
+					},
+					function(response){
 						if (response == "Not Found !"){
 							alert(response);
 						} else {
-							var table_results = "<table>";
-							var beer_types = [];
-							jQuery.each(response, function(json_obj, json_value){
-									table_results = table_results + "<tr><td>" +json_obj + "</td><td>Price</td><td>" + json_value.price + "</td></tr>";
+							jQuery("#search_results").append("<div id='results_wrapper'></div>");
+							jQuery.each(response, function(k, v){
+								console.log(k);
+								jQuery("#results_wrapper").append(k);
+								jQuery("#results_wrapper").append("<table id='table_results'></table");
+								//console.log(v);
+								jQuery.each(v, function(kk, vv){
+									jQuery("#table_results").append("<tr><td>"+kk+"</td><td>Price</td><td>"+vv.price+"</td></tr>");
+								});
+							});
+							jQuery("#search_results").dialog({
+								close: function(){
+									jQuery("#results_wrapper").remove();
 								}
-							);
-							table_results = table_results + "</table>";
-							jQuery("#search_results").append(beer);
-							jQuery("#search_results").append(table_results);
-							jQuery("#search_results").dialog();
+							});
+
 						}
 					}
-				);
+					);
+			}
 		}
-	});	
+		
+	});
 
 	jQuery("#add_place_beer").click(function(){
 		var city = jQuery("#select_city").html();
